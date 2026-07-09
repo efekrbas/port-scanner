@@ -13,17 +13,20 @@ subprocess.call("cls" if os.name == "nt" else "clear", shell=True)
 print("Welcome to Port Scanner")
 print("-" * 60)
 
-# take the target IP input from the user
-target = input("Enter a remote host to scan (IP address): ")
+# take the target IP or domain input from the user
+target = input("Enter a remote host to scan (IP address or domain): ")
 
 try:
     ip = ipaddress.ip_address(target) # validate if the IP is correct, if so continue
 except ValueError:
-    print("-" * 60)
-    print("IP address {} is not valid".format(target))
-    print("Quitting...")
-    print("-" * 60)
-    sys.exit()
+    try:
+        target = socket.gethostbyname(target) # try to resolve domain
+    except socket.gaierror:
+        print("-" * 60)
+        print("Hostname or IP address {} is not valid".format(target))
+        print("Quitting...")
+        print("-" * 60)
+        sys.exit()
 
 # enter the port range to scan 
 port_range = input("Enter the range to scan (ex. 40-100): ")
